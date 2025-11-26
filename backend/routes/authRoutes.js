@@ -14,6 +14,19 @@ const generateToken = (id) => {
   })
 }
 
+const formatUserResponse = (user) => ({
+  id: user._id,
+  name: user.name,
+  email: user.email,
+  phone: user.phone,
+  workArea: user.workArea,
+  role: user.role,
+  birthday: user.birthday,
+  isVerified: user.isVerified,
+  isLoggedIn: user.isLoggedIn,
+  createdAt: user.createdAt
+})
+
 // @route   POST /api/auth/register
 // @desc    Register a new user
 // @access  Public
@@ -55,12 +68,7 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({
       message: '註冊成功！請檢查您的郵箱以獲取驗證碼',
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        isVerified: user.isVerified
-      }
+      user: formatUserResponse(user)
     })
   } catch (error) {
     console.error('Register error:', error)
@@ -105,12 +113,7 @@ router.post('/verify-email', async (req, res) => {
 
     res.json({
       message: '郵箱驗證成功！',
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        isVerified: user.isVerified
-      }
+      user: formatUserResponse(user)
     })
   } catch (error) {
     console.error('Verify email error:', error)
@@ -158,14 +161,7 @@ router.post('/login', async (req, res) => {
     res.json({
       message: '登入成功',
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        isVerified: user.isVerified,
-        isLoggedIn: user.isLoggedIn,
-        createdAt: user.createdAt
-      }
+      user: formatUserResponse(user)
     })
   } catch (error) {
     console.error('Login error:', error)
@@ -179,14 +175,7 @@ router.post('/login', async (req, res) => {
 router.get('/verify', protect, async (req, res) => {
   try {
     res.json({
-      user: {
-        id: req.user._id,
-        name: req.user.name,
-        email: req.user.email,
-        isVerified: req.user.isVerified,
-        isLoggedIn: req.user.isLoggedIn,
-        createdAt: req.user.createdAt
-      }
+      user: formatUserResponse(req.user)
     })
   } catch (error) {
     console.error('Verify token error:', error)
@@ -209,6 +198,47 @@ router.post('/logout', protect, async (req, res) => {
     res.json({ message: '登出成功' })
   } catch (error) {
     console.error('Logout error:', error)
+    res.status(500).json({ message: '服務器錯誤' })
+  }
+})
+
+// @route   PUT /api/auth/profile
+// @desc    Update user profile
+// @access  Private
+router.put('/profile', protect, async (req, res) => {
+  try {
+    const { name, phone, workArea, role, birthday } = req.body
+    const allowedRoles = ['admin', 'manager', 'user']
+
+    const user = await User.findById(req.user._id)
+
+    if (!user) {
+      return res.status(404).json({ message: '用戶不存在' })
+    }
+
+    if (name) user.name = name
+    if (phone !== undefined) user.phone = phone
+    if (workArea !== undefined) user.workArea = workArea
+
+    if (role) {
+      if (!allowedRoles.includes(role)) {
+        return res.status(400).json({ message: '無效的權限值' })
+      }
+      user.role = role
+    }
+
+    if (birthday !== undefined) {
+      user.birthday = birthday ? new Date(birthday) : null
+    }
+
+    await user.save()
+
+    res.json({
+      message: '個人資料已更新',
+      user: formatUserResponse(user)
+    })
+  } catch (error) {
+    console.error('Update profile error:', error)
     res.status(500).json({ message: '服務器錯誤' })
   }
 })

@@ -2,10 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
-import { FaSignOutAlt, FaKey, FaExclamationTriangle } from "react-icons/fa";
+import {
+  FaSignOutAlt,
+  FaKey,
+  FaExclamationTriangle,
+  FaTachometerAlt,
+} from "react-icons/fa";
 
 function Navbar() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -29,32 +34,41 @@ function Navbar() {
 
   return (
     <>
-      <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-[0_20px_60px_-12px_rgba(0,0,0,0.25)] border border-white/30 p-8 mb-6 transform transition-all duration-500 hover:shadow-[0_25px_70px_-12px_rgba(99,102,241,0.35)] hover:scale-[1.01] hover:-translate-y-1">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
-              受保護的頁面
+      <nav className="w-full bg-white/95 backdrop-blur-xl shadow-[0_20px_60px_-15px_rgba(99,102,241,0.35)] border-b border-white/40 px-8 py-5 sticky top-0 left-0 z-30">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+              <FaTachometerAlt className="text-white text-2xl" />
+            </div>
+            <h1 className="text-2xl font-extrabold text-gray-900">
+              儀表板導航
             </h1>
-            <p className="text-gray-600 mt-2 font-medium">歡迎來到您的個人儀表板</p>
           </div>
-          <div className="flex items-center gap-3">
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => navigate("/profile")}
+              className="px-5 py-2.5 rounded-2xl border-2 border-indigo-200 text-indigo-600 font-semibold bg-indigo-50/80 hover:bg-indigo-100 transition-all duration-200"
+            >
+              修改個人訊息
+            </button>
             <button
               onClick={handleResetPassword}
-              className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white rounded-xl hover:from-amber-600 hover:via-orange-600 hover:to-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500/50 transform transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_30px_-5px_rgba(245,158,11,0.4)] active:scale-95 shadow-[0_4px_15px_-3px_rgba(245,158,11,0.3)]"
+              className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white rounded-2xl hover:from-amber-600 hover:via-orange-600 hover:to-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500/50 transform transition-all duration-300 hover:shadow-[0_10px_30px_-5px_rgba(245,158,11,0.4)] active:scale-95"
             >
               <FaKey className="transition-transform duration-300 group-hover:rotate-12" />
               <span className="font-semibold">重設密碼</span>
             </button>
             <button
               onClick={handleLogoutClick}
-              className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500 via-rose-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:via-rose-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500/50 transform transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_30px_-5px_rgba(239,68,68,0.4)] active:scale-95 shadow-[0_4px_15px_-3px_rgba(239,68,68,0.3)]"
+              className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-500 via-rose-500 to-red-600 text-white rounded-2xl hover:from-red-600 hover:via-rose-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500/50 transform transition-all duration-300 hover:shadow-[0_10px_30px_-5px_rgba(239,68,68,0.4)] active:scale-95"
             >
               <FaSignOutAlt className="transition-transform duration-300 group-hover:rotate-12" />
               <span className="font-semibold">登出</span>
             </button>
           </div>
         </div>
-      </div>
+      </nav>
 
       {/* 登出确认对话框 */}
       {showLogoutConfirm && (
@@ -91,4 +105,3 @@ function Navbar() {
 }
 
 export default Navbar;
-

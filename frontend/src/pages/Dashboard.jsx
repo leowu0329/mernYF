@@ -6,16 +6,16 @@ function Dashboard() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden">
       {/* 背景装饰 */}
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-50"></div>
       <div className="absolute top-0 right-0 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
 
-      <div className="max-w-5xl mx-auto relative z-10">
-        {/* 导航列 */}
-        <Navbar />
+      {/* 导航列 */}
+      <Navbar />
 
+      <div className="max-w-5xl mx-auto relative z-10">
         {/* 用户信息卡片 */}
         <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-3xl shadow-[0_20px_60px_-12px_rgba(99,102,241,0.5)] p-8 mb-6 text-white transform transition-all duration-500 hover:shadow-[0_25px_70px_-12px_rgba(139,92,246,0.6)] hover:scale-[1.01] hover:-translate-y-1">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">

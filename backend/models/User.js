@@ -15,6 +15,25 @@ const userSchema = new mongoose.Schema({
     trim: true,
     match: [/^\S+@\S+\.\S+$/, '請輸入有效的電子郵件地址']
   },
+  phone: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  workArea: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  role: {
+    type: String,
+    enum: ['admin', 'manager', 'user'],
+    default: 'user'
+  },
+  birthday: {
+    type: Date,
+    default: null
+  },
   password: {
     type: String,
     required: [true, '請輸入密碼'],

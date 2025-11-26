@@ -108,6 +108,12 @@ export const AuthProvider = ({ children }) => {
     return response.data
   }
 
+  const updateProfile = async (profileData) => {
+    const response = await axios.put(`${import.meta.env.VITE_API_URL}/auth/profile`, profileData)
+    setUser(response.data.user)
+    return response.data
+  }
+
   const verifyResetToken = async (token) => {
     const response = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-reset-token`, {
       params: { token }
@@ -133,6 +139,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     forgotPassword,
     resetPassword,
+    updateProfile,
     verifyResetToken,
     changePassword
   }
