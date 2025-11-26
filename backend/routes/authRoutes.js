@@ -273,7 +273,24 @@ router.post('/forgot-password', async (req, res) => {
 
     // Send reset password email with link
     try {
-      const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`
+      // Get frontend URL from environment variable, with fallback
+      let frontendUrl = process.env.FRONTEND_URL
+      
+      // If FRONTEND_URL is not set, try to construct from VERCEL_URL (for Vercel deployments)
+      if (!frontendUrl && process.env.VERCEL_URL) {
+        frontendUrl = `https://${process.env.VERCEL_URL}`
+      }
+      
+      // Final fallback to localhost for development
+      if (!frontendUrl) {
+        frontendUrl = 'http://localhost:3000'
+      }
+      
+      // Remove trailing slash if present
+      const cleanFrontendUrl = frontendUrl.replace(/\/$/, '')
+      const resetUrl = `${cleanFrontendUrl}/reset-password?token=${resetToken}`
+      
+      console.log('Reset password URL:', resetUrl) // Debug log
       await sendResetPasswordEmail(email, resetUrl)
     } catch (emailError) {
       console.error('Email sending failed:', emailError)
