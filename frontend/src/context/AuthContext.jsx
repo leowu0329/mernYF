@@ -1,6 +1,19 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
 
+// 獲取 API URL，如果未設置則使用默認值
+const getApiUrl = () => {
+  const apiUrl = import.meta.env.VITE_API_URL
+  if (!apiUrl) {
+    console.error('VITE_API_URL 環境變量未設置！請在 Vercel 環境變量中設置。')
+    // 生產環境默認值（需要替換為實際的後端 URL）
+    return 'https://your-backend-url.railway.app/api'
+  }
+  return apiUrl
+}
+
+const API_URL = getApiUrl()
+
 const AuthContext = createContext()
 
 export const useAuth = () => {
@@ -34,7 +47,7 @@ export const AuthProvider = ({ children }) => {
         return
       }
 
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify`)
+      const response = await axios.get(`${API_URL}/auth/verify`)
       setUser(response.data.user)
     } catch (error) {
       localStorage.removeItem('token')
@@ -46,7 +59,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   const login = async (email, password) => {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
+    const response = await axios.post(`${API_URL}/auth/login`, {
       email,
       password
     })
@@ -58,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   const register = async (name, email, password) => {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/register`, {
+    const response = await axios.post(`${API_URL}/auth/register`, {
       name,
       email,
       password
@@ -67,7 +80,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   const verifyEmail = async (email, verificationCode) => {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/verify-email`, {
+    const response = await axios.post(`${API_URL}/auth/verify-email`, {
       email,
       verificationCode
     })
@@ -77,7 +90,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       // Call backend logout endpoint to update isLoggedIn status
-      await axios.post(`${import.meta.env.VITE_API_URL}/auth/logout`, {}, {
+      await axios.post(`${API_URL}/auth/logout`, {}, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -93,14 +106,14 @@ export const AuthProvider = ({ children }) => {
   }
 
   const forgotPassword = async (email) => {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/forgot-password`, {
+    const response = await axios.post(`${API_URL}/auth/forgot-password`, {
       email
     })
     return response.data
   }
 
   const resetPassword = async (token, newPassword, confirmPassword) => {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/reset-password`, {
+    const response = await axios.post(`${API_URL}/auth/reset-password`, {
       token,
       newPassword,
       confirmPassword
@@ -109,20 +122,20 @@ export const AuthProvider = ({ children }) => {
   }
 
   const updateProfile = async (profileData) => {
-    const response = await axios.put(`${import.meta.env.VITE_API_URL}/auth/profile`, profileData)
+    const response = await axios.put(`${API_URL}/auth/profile`, profileData)
     setUser(response.data.user)
     return response.data
   }
 
   const verifyResetToken = async (token) => {
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-reset-token`, {
+    const response = await axios.get(`${API_URL}/auth/verify-reset-token`, {
       params: { token }
     })
     return response.data
   }
 
   const changePassword = async (currentPassword, newPassword, confirmPassword) => {
-    const response = await axios.put(`${import.meta.env.VITE_API_URL}/auth/change-password`, {
+    const response = await axios.put(`${API_URL}/auth/change-password`, {
       currentPassword,
       newPassword,
       confirmPassword
