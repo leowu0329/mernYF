@@ -4,12 +4,41 @@ import axios from 'axios'
 // 獲取 API URL，如果未設置則使用默認值
 const getApiUrl = () => {
   const apiUrl = import.meta.env.VITE_API_URL
+  
   if (!apiUrl) {
-    console.error('VITE_API_URL 環境變量未設置！請在 Vercel 環境變量中設置。')
+    console.error('❌ VITE_API_URL 環境變量未設置！請在 Vercel 環境變量中設置。')
+    console.error('📝 設置方法：Vercel → Settings → Environment Variables → 添加 VITE_API_URL')
     // 生產環境默認值（需要替換為實際的後端 URL）
     return 'https://your-backend-url.railway.app/api'
   }
-  return apiUrl
+  
+  // 驗證 URL 格式
+  let cleanUrl = apiUrl.trim()
+  
+  // 移除末尾的斜線
+  cleanUrl = cleanUrl.replace(/\/+$/, '')
+  
+  // 檢查是否以 http:// 或 https:// 開頭
+  if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+    console.error('❌ VITE_API_URL 格式錯誤！必須以 http:// 或 https:// 開頭')
+    console.error('❌ 當前值:', cleanUrl)
+    console.error('✅ 正確格式示例: https://your-backend.railway.app/api')
+    // 嘗試修復（添加 https://）
+    cleanUrl = `https://${cleanUrl}`
+    console.warn('⚠️ 已自動添加 https://，但請在 Vercel 中修正環境變量')
+  }
+  
+  // 確保以 /api 結尾（如果後端路由是 /api/auth）
+  if (!cleanUrl.endsWith('/api')) {
+    // 檢查是否已經包含 /api
+    if (!cleanUrl.includes('/api')) {
+      cleanUrl = `${cleanUrl}/api`
+      console.warn('⚠️ 已自動添加 /api 後綴，但請在 Vercel 中確認後端路由結構')
+    }
+  }
+  
+  console.log('✅ API URL:', cleanUrl)
+  return cleanUrl
 }
 
 const API_URL = getApiUrl()
