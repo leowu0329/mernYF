@@ -8,7 +8,11 @@ function Auction() {
       auctionType: "1拍",
       auctionDate: "2025-04-16",
       basePrice: "2580000",
-      suggestedPrices: ["二拍建議底價: 2,064,000", "三拍建議底價: 1,651,200", "四拍建議底價: 1,320,960"],
+      suggestedPrices: [
+        "二拍建議底價: 2,064,000",
+        "三拍建議底價: 1,651,200",
+        "四拍建議底價: 1,320,960",
+      ],
       pricePerPing: "209702",
       cp: "1.03",
       views: "0",
@@ -103,37 +107,37 @@ function Auction() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-3 text-left text-base font-bold text-gray-900 uppercase tracking-wider">
+              <th className="p-0 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                 拍別
               </th>
-              <th className="px-4 py-3 text-left text-base font-bold text-gray-900 uppercase tracking-wider">
+              <th className="p-0 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                 拍賣日
               </th>
-              <th className="px-4 py-3 text-left text-base font-bold text-gray-900 uppercase tracking-wider">
+              <th className="p-0 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                 底價
               </th>
-              <th className="px-4 py-3 text-left text-base font-bold text-gray-900 uppercase tracking-wider">
+              <th className="p-0 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                 坪價
               </th>
-              <th className="px-4 py-3 text-left text-base font-bold text-gray-900 uppercase tracking-wider">
+              <th className="p-0 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                 CP
               </th>
-              <th className="px-4 py-3 text-left text-base font-bold text-gray-900 uppercase tracking-wider">
+              <th className="p-0 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                 點閱
               </th>
-              <th className="px-4 py-3 text-left text-base font-bold text-gray-900 uppercase tracking-wider">
+              <th className="p-0 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                 監控
               </th>
-              <th className="px-4 py-3 text-left text-base font-bold text-gray-900 uppercase tracking-wider">
+              <th className="p-0 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                 成交件數
               </th>
-              <th className="px-4 py-3 text-left text-base font-bold text-gray-900 uppercase tracking-wider">
+              <th className="p-0 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                 建議加價
               </th>
-              <th className="px-4 py-3 text-left text-base font-bold text-gray-900 uppercase tracking-wider">
+              <th className="p-0 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                 保証金
               </th>
-              <th className="px-4 py-3 text-left text-base font-bold text-gray-900 uppercase tracking-wider">
+              <th className="p-0 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                 操作
               </th>
             </tr>
@@ -141,13 +145,13 @@ function Auction() {
           <tbody className="bg-white divide-y divide-gray-200">
             {auctionData.map((auction) => (
               <tr key={auction.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-base text-gray-900">
+                <td className="p-0 text-center align-middle text-base text-gray-900">
                   {auction.auctionType}
                 </td>
-                <td className="px-4 py-3 text-base text-gray-900">
+                <td className="p-0 text-center align-middle text-base text-gray-900">
                   {auction.auctionDate}
                 </td>
-                <td className="px-4 py-3 text-base">
+                <td className="p-0 text-center align-middle text-base">
                   <div className="text-gray-900">{auction.basePrice}</div>
                   {auction.suggestedPrices.length > 0 && (
                     <div className="mt-1 space-y-0.5">
@@ -162,35 +166,39 @@ function Auction() {
                     </div>
                   )}
                 </td>
-                <td className="px-4 py-3 text-base text-gray-900">
+                <td className="p-0 text-center align-middle text-base text-gray-900">
                   {auction.pricePerPing}
                 </td>
-                <td className="px-4 py-3 text-base">
+                <td className="p-0 text-center align-middle text-base">
                   <span className="text-gray-900">{auction.cp}</span>
                   <span className="text-green-600 ml-1">(建議進場)</span>
                 </td>
-                <td className="px-4 py-3 text-base text-gray-900">
+                <td className="p-0 text-center align-middle text-base text-gray-900">
                   {auction.views}
                 </td>
-                <td className="px-4 py-3 text-base text-gray-900">
+                <td className="p-0 text-center align-middle text-base text-gray-900">
                   {auction.monitor}
                 </td>
-                <td className="px-4 py-3 text-base text-gray-900">
+                <td className="p-0 text-center align-middle text-base text-gray-900">
                   {auction.transactions}
                 </td>
-                <td className="px-4 py-3 text-base">
+                <td className="p-0 text-center align-middle text-base">
                   <div className="space-y-0.5">
-                    <div className="text-gray-700">a = {auction.suggestedBidA}</div>
-                    <div className="text-gray-700">b = {auction.suggestedBidB}</div>
+                    <div className="text-gray-700">
+                      a = {auction.suggestedBidA}
+                    </div>
+                    <div className="text-gray-700">
+                      b = {auction.suggestedBidB}
+                    </div>
                     <div className="text-green-600 font-medium">
                       建議加價 : {auction.suggestedBid}
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-base text-gray-900">
+                <td className="p-0 text-center align-middle text-base text-gray-900">
                   {auction.deposit}
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap">
+                <td className="p-0 text-center align-middle whitespace-nowrap">
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => handleEdit(auction.id)}
@@ -215,7 +223,8 @@ function Auction() {
       {/* Footer Notes */}
       <div className="mt-6 p-4 bg-gray-50 rounded-lg text-sm text-gray-600 space-y-2">
         <div>
-          <strong>成交件數：</strong>比較物件定義直徑2.5公里內/屋齡相近(10年)/最近一年成交件數
+          <strong>成交件數：</strong>
+          比較物件定義直徑2.5公里內/屋齡相近(10年)/最近一年成交件數
         </div>
         <div>
           <strong>a = 底價*(1+成交件數/4.5/100)</strong>
@@ -232,4 +241,3 @@ function Auction() {
 }
 
 export default Auction;
-

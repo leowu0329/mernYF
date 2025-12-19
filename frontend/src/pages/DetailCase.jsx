@@ -60,13 +60,21 @@ function DetailCase() {
       value: `債務人(${caseData.debtors})共有人(${caseData.coOwners})`,
     },
     { id: "拍賣", icon: FaGavel, value: `(${caseData.auction})` },
-    { id: "勘查", icon: FaChartBar, value: `(連結:${caseData.inspectionLinks})` },
+    {
+      id: "勘查",
+      icon: FaChartBar,
+      value: `(連結:${caseData.inspectionLinks})`,
+    },
     {
       id: "比價建物",
       icon: FaHome,
       value: `(${caseData.comparisonBuilding})`,
     },
-    { id: "最終判定", icon: FaCheckCircle, value: `(${caseData.finalJudgment})` },
+    {
+      id: "最終判定",
+      icon: FaCheckCircle,
+      value: `(${caseData.finalJudgment})`,
+    },
     { id: "結果", icon: FaFileAlt, value: `(${caseData.result})` },
     { id: "公文", icon: FaFileAlt, value: `(${caseData.officialDocuments})` },
   ];
@@ -103,7 +111,7 @@ function DetailCase() {
                   <button
                     key={item.id}
                     onClick={() => setActiveMenu(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-md transition-colors ${
+                    className={`w-full flex items-center gap-3 p-1 rounded-md transition-colors ${
                       isActive
                         ? "bg-blue-600 text-white"
                         : "bg-white text-gray-700 hover:bg-gray-100"

@@ -66,7 +66,8 @@ const mockCases = [
 function Dashboard() {
   const [statusFilter, setStatusFilter] = useState("在途");
   const [countyFilter, setCountyFilter] = useState("所有縣市");
-  const [responsiblePersonFilter, setResponsiblePersonFilter] = useState("Sosan");
+  const [responsiblePersonFilter, setResponsiblePersonFilter] =
+    useState("Sosan");
   const [keywordSearch, setKeywordSearch] = useState("");
   const [cases, setCases] = useState(mockCases);
   const [sortField, setSortField] = useState(null);
@@ -114,7 +115,7 @@ function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-6">
         {/* 标题 */}
         <h1 className="text-3xl font-bold text-blue-600 mb-6">案件列表</h1>
@@ -124,7 +125,7 @@ function Dashboard() {
           <div className="flex flex-wrap items-center gap-4">
             {/* 状态下拉菜单 */}
             <div className="flex-1 min-w-[150px]">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1">
                 狀態
               </label>
               <div className="relative">
@@ -142,7 +143,7 @@ function Dashboard() {
 
             {/* 县市下拉菜单 */}
             <div className="flex-1 min-w-[150px]">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1">
                 縣市
               </label>
               <div className="relative">
@@ -163,7 +164,7 @@ function Dashboard() {
 
             {/* 负责人下拉菜单 */}
             <div className="flex-1 min-w-[150px]">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1">
                 負責人
               </label>
               <div className="relative">
@@ -180,7 +181,7 @@ function Dashboard() {
 
             {/* 关键字查询 */}
             <div className="flex-2 min-w-[200px]">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1">
                 關鍵字查詢
               </label>
               <input
@@ -211,13 +212,13 @@ function Dashboard() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="p-1 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                     報表
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="p-1 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                     狀態
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="p-1 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                     <button
                       onClick={() => handleSort("caseNumber")}
                       className="flex items-center gap-1 hover:text-blue-600"
@@ -226,7 +227,7 @@ function Dashboard() {
                       <FaChevronDown className="text-xs" />
                     </button>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="p-1 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                     <button
                       onClick={() => handleSort("bidDeadline")}
                       className="flex items-center gap-1 hover:text-blue-600"
@@ -235,25 +236,25 @@ function Dashboard() {
                       <FaChevronDown className="text-xs" />
                     </button>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="p-1 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                     負責人
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="p-1 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                     最終判定
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="p-1 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                     執行結果
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="p-1 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                     優購結果
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="p-1 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                     標的編號
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="p-1 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                     公文
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="p-1 text-center align-middle text-base font-bold text-gray-900 uppercase tracking-wider">
                     操作
                   </th>
                 </tr>
@@ -261,55 +262,55 @@ function Dashboard() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentCases.map((caseItem) => (
                   <tr key={caseItem.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="p-1 text-center align-middle whitespace-nowrap">
                       <FaFileWord className="text-blue-600 text-xl" />
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                    <td className="p-1 text-center align-middle whitespace-nowrap">
+                      <span className="px-2 py-1 text-sm font-semibold rounded-full bg-yellow-100 text-yellow-800">
                         {caseItem.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="p-1 text-center align-middle">
                       <Link
                         to={`/case/${caseItem.id}`}
-                        className="block hover:text-blue-600 transition-colors"
+                        className="block text-center hover:text-blue-600 transition-colors"
                       >
-                        <div className="text-sm text-blue-600 underline">
+                        <div className="text-base text-blue-600 underline text-center">
                           {caseItem.caseNumber}
                         </div>
-                        <div className="text-sm text-blue-600 underline">
+                        <div className="text-base text-blue-600 underline text-center">
                           {caseItem.address}
                         </div>
                       </Link>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    <td className="p-1 text-center align-middle whitespace-nowrap text-base text-gray-500">
                       {caseItem.bidDeadline}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    <td className="p-1 text-center align-middle whitespace-nowrap text-base text-gray-900">
                       {caseItem.responsiblePerson}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    <td className="p-1 text-center align-middle whitespace-nowrap text-base text-gray-500">
                       {caseItem.finalJudgment}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    <td className="p-1 text-center align-middle whitespace-nowrap text-base text-gray-500">
                       {caseItem.executionResult}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    <td className="p-1 text-center align-middle whitespace-nowrap text-base text-gray-500">
                       {caseItem.preferredPurchaseResult}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    <td className="p-1 text-center align-middle whitespace-nowrap text-base text-gray-500">
                       {caseItem.targetNumber}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    <td className="p-1 text-center align-middle whitespace-nowrap text-base text-gray-500">
                       {caseItem.officialDocument}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="p-1 text-center align-middle whitespace-nowrap">
                       <button
                         onClick={() => handleDelete(caseItem.id)}
                         className="flex items-center gap-1 text-red-600 hover:text-red-800 transition-colors"
                       >
                         <FaTrash />
-                        <span className="text-sm">刪除</span>
+                        <span className="text-base">刪除</span>
                       </button>
                     </td>
                   </tr>
@@ -323,7 +324,7 @@ function Dashboard() {
         <div className="bg-white rounded-lg shadow-md p-4 mt-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             {/* 左侧：显示信息 */}
-            <div className="text-sm text-gray-600">
+            <div className="text-base text-gray-600">
               顯示{startItem}~{endItem}筆(第{currentPage}頁,共{totalPages}頁)
             </div>
 
@@ -335,7 +336,7 @@ function Dashboard() {
                   <button
                     key={pageNum}
                     onClick={() => handlePageChange(pageNum)}
-                    className={`px-3 py-1 rounded ${
+                    className={`px-3 py-1 rounded text-base ${
                       currentPage === pageNum
                         ? "bg-blue-600 text-white"
                         : "bg-white text-blue-600 border border-blue-600 hover:bg-blue-50"
@@ -350,14 +351,14 @@ function Dashboard() {
                   {currentPage < totalPages - 1 && (
                     <button
                       onClick={() => handlePageChange(currentPage + 1)}
-                      className="px-3 py-1 rounded bg-white text-blue-600 border border-blue-600 hover:bg-blue-50 transition-colors"
+                      className="px-3 py-1 rounded text-base bg-white text-blue-600 border border-blue-600 hover:bg-blue-50 transition-colors"
                     >
                       下一頁
                     </button>
                   )}
                   <button
                     onClick={() => handlePageChange(totalPages)}
-                    className="px-3 py-1 rounded bg-white text-blue-600 border border-blue-600 hover:bg-blue-50 transition-colors"
+                    className="px-3 py-1 rounded text-base bg-white text-blue-600 border border-blue-600 hover:bg-blue-50 transition-colors"
                   >
                     最後一頁
                   </button>
@@ -367,12 +368,12 @@ function Dashboard() {
 
             {/* 右侧：每页显示数量 */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">每頁顯示:</span>
+              <span className="text-base text-gray-600">每頁顯示:</span>
               <div className="relative">
                 <select
                   value={itemsPerPage}
                   onChange={(e) => handleItemsPerPageChange(e.target.value)}
-                  className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
+                  className="px-3 py-1 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
                 >
                   <option value="10">10</option>
                   <option value="20">20</option>
