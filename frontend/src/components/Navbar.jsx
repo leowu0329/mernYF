@@ -34,7 +34,7 @@ function Navbar() {
 
   return (
     <>
-      <nav className="w-full bg-white/95 backdrop-blur-xl shadow-[0_20px_60px_-15px_rgba(99,102,241,0.35)] border-b border-white/40 px-8 py-5 sticky top-0 left-0 z-30">
+      <nav className="w-full bg-white/95 backdrop-blur-xl shadow-[0_20px_60px_-15px_rgba(99,102,241,0.35)] border-b border-white/40 p-0 m-0 sticky top-0 left-0 z-30">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">

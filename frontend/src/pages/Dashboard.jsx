@@ -1,104 +1,386 @@
-import { useAuth } from "../context/AuthContext";
-import { FaUser } from "react-icons/fa";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { FaFileWord, FaTrash, FaPlus, FaChevronDown } from "react-icons/fa";
+
+// 示例数据
+const mockCases = [
+  {
+    id: 1,
+    report: "word",
+    status: "在途",
+    caseNumber: "112年度司執字第109545號",
+    address: "高雄市苓雅區福安路252巷6號",
+    bidDeadline: "-",
+    responsiblePerson: "Sosan",
+    finalJudgment: "-",
+    executionResult: "-",
+    preferredPurchaseResult: "-",
+    targetNumber: "-",
+    officialDocument: "-",
+  },
+  {
+    id: 2,
+    report: "word",
+    status: "在途",
+    caseNumber: "114年度司執字第23889號",
+    address: "台南市北區長榮路4段135巷8號",
+    bidDeadline: "-",
+    responsiblePerson: "Sosan",
+    finalJudgment: "4拍",
+    executionResult: "-",
+    preferredPurchaseResult: "-",
+    targetNumber: "-",
+    officialDocument: "-",
+  },
+  {
+    id: 3,
+    report: "word",
+    status: "在途",
+    caseNumber: "112年度司執字第57523號",
+    address: "台南市中西區開山里11鄰大同路1段70巷17號5樓之3",
+    bidDeadline: "-",
+    responsiblePerson: "Sosan",
+    finalJudgment: "未判定",
+    executionResult: "無人優購",
+    preferredPurchaseResult: "-",
+    targetNumber: "GT011",
+    officialDocument: "-",
+  },
+  {
+    id: 4,
+    report: "word",
+    status: "在途",
+    caseNumber: "113年度司執字第14138號",
+    address: "台東縣蘭嶼鄉朗島村朗島路161號",
+    bidDeadline: "-",
+    responsiblePerson: "Sosan",
+    finalJudgment: "-",
+    executionResult: "-",
+    preferredPurchaseResult: "-",
+    targetNumber: "-",
+    officialDocument: "-",
+  },
+];
 
 function Dashboard() {
-  const { user } = useAuth();
+  const [statusFilter, setStatusFilter] = useState("在途");
+  const [countyFilter, setCountyFilter] = useState("所有縣市");
+  const [responsiblePersonFilter, setResponsiblePersonFilter] = useState("Sosan");
+  const [keywordSearch, setKeywordSearch] = useState("");
+  const [cases, setCases] = useState(mockCases);
+  const [sortField, setSortField] = useState(null);
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const handleDelete = (id) => {
+    setCases(cases.filter((caseItem) => caseItem.id !== id));
+  };
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const handleCreateCase = () => {
+    // 建立新案件的逻辑
+    console.log("建立新案件");
+  };
+
+  // 分页计算
+  const totalPages = Math.ceil(cases.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentCases = cases.slice(startIndex, endIndex);
+  const startItem = cases.length > 0 ? startIndex + 1 : 0;
+  const endItem = Math.min(endIndex, cases.length);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(Number(value));
+    setCurrentPage(1);
+  };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* 背景装饰 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-50"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
-
-      {/* 导航列 */}
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
+      
+      <div className="container mx-auto px-4 py-6">
+        {/* 标题 */}
+        <h1 className="text-3xl font-bold text-blue-600 mb-6">案件列表</h1>
 
-      <div className="max-w-5xl mx-auto relative z-10">
-        {/* 用户信息卡片 */}
-        <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-3xl shadow-[0_20px_60px_-12px_rgba(99,102,241,0.5)] p-8 mb-6 text-white transform transition-all duration-500 hover:shadow-[0_25px_70px_-12px_rgba(139,92,246,0.6)] hover:scale-[1.01] hover:-translate-y-1">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-6 shadow-xl">
-              <FaUser className="text-white text-5xl" />
-            </div>
-            <div className="flex-1">
-              <h2 className="text-3xl font-bold mb-2">歡迎回來！</h2>
-              <p className="text-indigo-100 text-lg mb-6">您已成功登入系統</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                  <p className="text-sm text-indigo-100 mb-1">姓名</p>
-                  <p className="text-xl font-semibold">{user?.name}</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                  <p className="text-sm text-indigo-100 mb-1">電子郵件</p>
-                  <p className="text-xl font-semibold break-all">
-                    {user?.email}
-                  </p>
-                </div>
+        {/* 筛选栏 */}
+        <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+          <div className="flex flex-wrap items-center gap-4">
+            {/* 状态下拉菜单 */}
+            <div className="flex-1 min-w-[150px]">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                狀態
+              </label>
+              <div className="relative">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="在途">在途</option>
+                  <option value="已完成">已完成</option>
+                  <option value="已取消">已取消</option>
+                </select>
               </div>
+            </div>
+
+            {/* 县市下拉菜单 */}
+            <div className="flex-1 min-w-[150px]">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                縣市
+              </label>
+              <div className="relative">
+                <select
+                  value={countyFilter}
+                  onChange={(e) => setCountyFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="所有縣市">所有縣市</option>
+                  <option value="台北市">台北市</option>
+                  <option value="新北市">新北市</option>
+                  <option value="台南市">台南市</option>
+                  <option value="高雄市">高雄市</option>
+                  <option value="台東縣">台東縣</option>
+                </select>
+              </div>
+            </div>
+
+            {/* 负责人下拉菜单 */}
+            <div className="flex-1 min-w-[150px]">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                負責人
+              </label>
+              <div className="relative">
+                <select
+                  value={responsiblePersonFilter}
+                  onChange={(e) => setResponsiblePersonFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="Sosan">Sosan</option>
+                  <option value="所有負責人">所有負責人</option>
+                </select>
+              </div>
+            </div>
+
+            {/* 关键字查询 */}
+            <div className="flex-2 min-w-[200px]">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                關鍵字查詢
+              </label>
+              <input
+                type="text"
+                value={keywordSearch}
+                onChange={(e) => setKeywordSearch(e.target.value)}
+                placeholder="案號、地址、負責人等"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* 建立新案件按钮 */}
+            <div className="flex items-end">
+              <button
+                onClick={handleCreateCase}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                <FaPlus />
+                <span>建立新案件</span>
+              </button>
             </div>
           </div>
         </div>
 
-        {/* 信息卡片 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-[0_10px_30px_-5px_rgba(0,0,0,0.15)] p-6 border border-white/30 transform transition-all duration-300 hover:shadow-[0_15px_40px_-5px_rgba(34,197,94,0.2)] hover:-translate-y-2 hover:scale-[1.02]">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-green-100 rounded-xl p-3">
-                <svg
-                  className="w-6 h-6 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">帳戶狀態</h3>
-            </div>
-            <p className="text-gray-600 font-medium">已驗證</p>
-            <div className="mt-4 flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-gray-500">帳戶已激活</span>
-            </div>
+        {/* 案件列表表格 */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    報表
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    狀態
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    <button
+                      onClick={() => handleSort("caseNumber")}
+                      className="flex items-center gap-1 hover:text-blue-600"
+                    >
+                      案號及完整地址
+                      <FaChevronDown className="text-xs" />
+                    </button>
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    <button
+                      onClick={() => handleSort("bidDeadline")}
+                      className="flex items-center gap-1 hover:text-blue-600"
+                    >
+                      應買止日
+                      <FaChevronDown className="text-xs" />
+                    </button>
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    負責人
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    最終判定
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    執行結果
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    優購結果
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    標的編號
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    公文
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    操作
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {currentCases.map((caseItem) => (
+                  <tr key={caseItem.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <FaFileWord className="text-blue-600 text-xl" />
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                        {caseItem.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Link
+                        to={`/case/${caseItem.id}`}
+                        className="block hover:text-blue-600 transition-colors"
+                      >
+                        <div className="text-sm text-blue-600 underline">
+                          {caseItem.caseNumber}
+                        </div>
+                        <div className="text-sm text-blue-600 underline">
+                          {caseItem.address}
+                        </div>
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                      {caseItem.bidDeadline}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      {caseItem.responsiblePerson}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                      {caseItem.finalJudgment}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                      {caseItem.executionResult}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                      {caseItem.preferredPurchaseResult}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                      {caseItem.targetNumber}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                      {caseItem.officialDocument}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <button
+                        onClick={() => handleDelete(caseItem.id)}
+                        className="flex items-center gap-1 text-red-600 hover:text-red-800 transition-colors"
+                      >
+                        <FaTrash />
+                        <span className="text-sm">刪除</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+        </div>
 
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-[0_10px_30px_-5px_rgba(0,0,0,0.15)] p-6 border border-white/30 transform transition-all duration-300 hover:shadow-[0_15px_40px_-5px_rgba(59,130,246,0.2)] hover:-translate-y-2 hover:scale-[1.02]">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-blue-100 rounded-xl p-3">
-                <svg
-                  className="w-6 h-6 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">註冊時間</h3>
+        {/* 分页控件 */}
+        <div className="bg-white rounded-lg shadow-md p-4 mt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            {/* 左侧：显示信息 */}
+            <div className="text-sm text-gray-600">
+              顯示{startItem}~{endItem}筆(第{currentPage}頁,共{totalPages}頁)
             </div>
-            <p className="text-gray-600 font-medium">
-              {user?.createdAt
-                ? new Date(user.createdAt).toLocaleDateString("zh-TW", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })
-                : "N/A"}
-            </p>
-            <div className="mt-4 text-sm text-gray-500">
-              成為會員已經一段時間了
+
+            {/* 中间：页码按钮 */}
+            <div className="flex items-center gap-2">
+              {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+                const pageNum = i + 1;
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`px-3 py-1 rounded ${
+                      currentPage === pageNum
+                        ? "bg-blue-600 text-white"
+                        : "bg-white text-blue-600 border border-blue-600 hover:bg-blue-50"
+                    } transition-colors`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+              {currentPage < totalPages && (
+                <>
+                  {currentPage < totalPages - 1 && (
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className="px-3 py-1 rounded bg-white text-blue-600 border border-blue-600 hover:bg-blue-50 transition-colors"
+                    >
+                      下一頁
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handlePageChange(totalPages)}
+                    className="px-3 py-1 rounded bg-white text-blue-600 border border-blue-600 hover:bg-blue-50 transition-colors"
+                  >
+                    最後一頁
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* 右侧：每页显示数量 */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">每頁顯示:</span>
+              <div className="relative">
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => handleItemsPerPageChange(e.target.value)}
+                  className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
+                >
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none text-xs" />
+              </div>
             </div>
           </div>
         </div>

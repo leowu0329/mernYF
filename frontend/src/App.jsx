@@ -8,42 +8,59 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import ChangePassword from './pages/ChangePassword'
 import Profile from './pages/Profile'
+import DetailCase from './pages/DetailCase'
+import Footer from './components/Footer'
 
 function App() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route 
-          path="/change-password" 
-          element={
-            <ProtectedRoute>
-              <ChangePassword />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/profile" 
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          } 
-        />
-        <Route path="/" element={<Navigate to="/login" replace />} />
-      </Routes>
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow">
+          <Routes>
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route 
+              path="/change-password" 
+              element={
+                <ProtectedRoute>
+                  <ChangePassword />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/case/:id" 
+              element={
+                <ProtectedRoute>
+                  <DetailCase />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            {/* Catch-all route for unknown paths */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </div>
+        <Footer />
+      </div>
     </AuthProvider>
   )
 }

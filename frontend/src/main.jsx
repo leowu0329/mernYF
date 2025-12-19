@@ -8,7 +8,12 @@ import 'react-toastify/dist/ReactToastify.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <App />
       <ToastContainer 
         position="top-right"
