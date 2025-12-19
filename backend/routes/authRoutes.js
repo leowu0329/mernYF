@@ -18,10 +18,24 @@ const formatUserResponse = (user) => ({
   id: user._id,
   name: user.name,
   email: user.email,
+  nickname: user.nickname,
+  personalId: user.personalId,
   phone: user.phone,
-  workArea: user.workArea,
+  mobile: user.mobile,
   role: user.role,
+  workArea: user.workArea,
+  identityType: user.identityType,
   birthday: user.birthday,
+  city: user.city,
+  district: user.district,
+  village: user.village,
+  neighbor: user.neighbor,
+  street: user.street,
+  section: user.section,
+  lane: user.lane,
+  alley: user.alley,
+  number: user.number,
+  floor: user.floor,
   isVerified: user.isVerified,
   isLoggedIn: user.isLoggedIn,
   createdAt: user.createdAt
@@ -207,8 +221,34 @@ router.post('/logout', protect, async (req, res) => {
 // @access  Private
 router.put('/profile', protect, async (req, res) => {
   try {
-    const { name, phone, workArea, role, birthday } = req.body
-    const allowedRoles = ['admin', 'manager', 'user']
+    const {
+      // 基本資料
+      name,
+      email,
+      nickname,
+      personalId,
+      phone,
+      mobile,
+      role,
+      workArea,
+      identityType,
+      birthday,
+      // 進階資料
+      city,
+      district,
+      village,
+      neighbor,
+      street,
+      section,
+      lane,
+      alley,
+      number,
+      floor,
+    } = req.body
+
+    const allowedRoles = ['guest', 'user', 'admin']
+    const allowedWorkAreas = ['north', 'central', 'south', 'kaoping']
+    const allowedIdentityTypes = ['public', 'private']
 
     const user = await User.findById(req.user._id)
 
@@ -216,20 +256,50 @@ router.put('/profile', protect, async (req, res) => {
       return res.status(404).json({ message: '用戶不存在' })
     }
 
-    if (name) user.name = name
+    // 基本資料
+    if (name !== undefined) user.name = name
+    if (email !== undefined) user.email = email
+    if (nickname !== undefined) user.nickname = nickname
+    if (personalId !== undefined) user.personalId = personalId
     if (phone !== undefined) user.phone = phone
-    if (workArea !== undefined) user.workArea = workArea
+    if (mobile !== undefined) user.mobile = mobile
 
-    if (role) {
+    if (role !== undefined) {
       if (!allowedRoles.includes(role)) {
         return res.status(400).json({ message: '無效的權限值' })
       }
       user.role = role
     }
 
+    if (workArea !== undefined) {
+      if (workArea && !allowedWorkAreas.includes(workArea)) {
+        return res.status(400).json({ message: '無效的工作轄區值' })
+      }
+      user.workArea = workArea || null
+    }
+
+    if (identityType !== undefined) {
+      if (identityType && !allowedIdentityTypes.includes(identityType)) {
+        return res.status(400).json({ message: '無效的身份類型值' })
+      }
+      user.identityType = identityType || null
+    }
+
     if (birthday !== undefined) {
       user.birthday = birthday ? new Date(birthday) : null
     }
+
+    // 進階資料
+    if (city !== undefined) user.city = city || null
+    if (district !== undefined) user.district = district || null
+    if (village !== undefined) user.village = village || null
+    if (neighbor !== undefined) user.neighbor = neighbor || null
+    if (street !== undefined) user.street = street || null
+    if (section !== undefined) user.section = section || null
+    if (lane !== undefined) user.lane = lane || null
+    if (alley !== undefined) user.alley = alley || null
+    if (number !== undefined) user.number = number || null
+    if (floor !== undefined) user.floor = floor || null
 
     await user.save()
 
