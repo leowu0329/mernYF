@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
+import exportRoutes from "./routes/exportRoutes.js";
+import caseRoutes from "./routes/caseRoutes.js";
 
 dotenv.config();
 
@@ -20,6 +22,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/export", exportRoutes);
+app.use("/api/cases", caseRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

@@ -9,6 +9,7 @@ import ResetPassword from './pages/ResetPassword'
 import ChangePassword from './pages/ChangePassword'
 import Profile from './pages/Profile'
 import DetailCase from './pages/DetailCase'
+import ImportExport from './components/ImportExport'
 import Footer from './components/Footer'
 
 function App() {
@@ -51,6 +52,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <DetailCase />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/import-export" 
+              element={
+                <ProtectedRoute>
+                  <ImportExport />
                 </ProtectedRoute>
               } 
             />

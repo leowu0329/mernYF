@@ -1,79 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { FaFileWord, FaTrash, FaPlus, FaChevronDown } from "react-icons/fa";
+import { FaFileWord, FaTrash, FaPlus, FaChevronDown, FaTimes } from "react-icons/fa";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
-// 示例数据
-const mockCases = [
-  {
-    id: 1,
-    report: "word",
-    status: "在途",
-    caseNumber: "112年度司執字第109545號",
-    address: "高雄市苓雅區福安路252巷6號",
-    bidDeadline: "-",
-    responsiblePerson: "Sosan",
-    finalJudgment: "-",
-    executionResult: "-",
-    preferredPurchaseResult: "-",
-    targetNumber: "-",
-    officialDocument: "-",
-  },
-  {
-    id: 2,
-    report: "word",
-    status: "在途",
-    caseNumber: "114年度司執字第23889號",
-    address: "台南市北區長榮路4段135巷8號",
-    bidDeadline: "-",
-    responsiblePerson: "Sosan",
-    finalJudgment: "4拍",
-    executionResult: "-",
-    preferredPurchaseResult: "-",
-    targetNumber: "-",
-    officialDocument: "-",
-  },
-  {
-    id: 3,
-    report: "word",
-    status: "在途",
-    caseNumber: "112年度司執字第57523號",
-    address: "台南市中西區開山里11鄰大同路1段70巷17號5樓之3",
-    bidDeadline: "-",
-    responsiblePerson: "Sosan",
-    finalJudgment: "未判定",
-    executionResult: "無人優購",
-    preferredPurchaseResult: "-",
-    targetNumber: "GT011",
-    officialDocument: "-",
-  },
-  {
-    id: 4,
-    report: "word",
-    status: "在途",
-    caseNumber: "113年度司執字第14138號",
-    address: "台東縣蘭嶼鄉朗島村朗島路161號",
-    bidDeadline: "-",
-    responsiblePerson: "Sosan",
-    finalJudgment: "-",
-    executionResult: "-",
-    preferredPurchaseResult: "-",
-    targetNumber: "-",
-    officialDocument: "-",
-  },
-];
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 function Dashboard() {
+  const { user } = useAuth();
   const [statusFilter, setStatusFilter] = useState("在途");
   const [countyFilter, setCountyFilter] = useState("所有縣市");
   const [responsiblePersonFilter, setResponsiblePersonFilter] =
     useState("Sosan");
   const [keywordSearch, setKeywordSearch] = useState("");
-  const [cases, setCases] = useState(mockCases);
+  const [cases, setCases] = useState([]);
+  const [loadingCases, setLoadingCases] = useState(true);
   const [sortField, setSortField] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  
+  // Modal 相关状态
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [cities, setCities] = useState([]);
+  const [townships, setTownships] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [formData, setFormData] = useState({
+    caseNumber: "",
+    company: "揚富開發有限公司",
+    cityId: "",
+    townshipId: "",
+    bigSection: "",
+    smallSection: "",
+    village: "",
+    neighbor: "",
+    street: "",
+    section: "",
+    lane: "",
+    alley: "",
+    number: "",
+    floor: "",
+    status: "在途",
+    userId: "",
+  });
 
   const handleDelete = (id) => {
     setCases(cases.filter((caseItem) => caseItem.id !== id));
@@ -88,9 +60,246 @@ function Dashboard() {
     }
   };
 
+  // 获取案件列表
+  useEffect(() => {
+    const fetchCases = async () => {
+      try {
+        setLoadingCases(true);
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setLoadingCases(false);
+          return;
+        }
+
+        const response = await axios.get(`${API_URL}/cases`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // 将后端数据转换为前端显示格式
+        const formattedCases = (response.data.cases || []).map((caseItem) => {
+          // 构建完整地址
+          const addressParts = [];
+          if (caseItem.city?.name) addressParts.push(caseItem.city.name);
+          if (caseItem.township?.name) addressParts.push(caseItem.township.name);
+          if (caseItem.village) addressParts.push(caseItem.village);
+          if (caseItem.neighbor) addressParts.push(`${caseItem.neighbor}鄰`);
+          if (caseItem.street) addressParts.push(caseItem.street);
+          if (caseItem.section) addressParts.push(`${caseItem.section}段`);
+          if (caseItem.lane) addressParts.push(`${caseItem.lane}巷`);
+          if (caseItem.alley) addressParts.push(`${caseItem.alley}弄`);
+          if (caseItem.number) addressParts.push(`${caseItem.number}號`);
+          if (caseItem.floor) addressParts.push(caseItem.floor);
+
+          const fullAddress = addressParts.join("") || "-";
+
+          return {
+            id: caseItem._id,
+            report: "word",
+            status: caseItem.status || "-",
+            caseNumber: caseItem.caseNumber || "-",
+            address: fullAddress,
+            bidDeadline: "-",
+            responsiblePerson: caseItem.user?.nickname || caseItem.user?.name || "-",
+            finalJudgment: "-",
+            executionResult: "-",
+            preferredPurchaseResult: "-",
+            targetNumber: "-",
+            officialDocument: "-",
+          };
+        });
+
+        setCases(formattedCases);
+      } catch (error) {
+        console.error("獲取案件列表失敗:", error);
+        toast.error("獲取案件列表失敗");
+        setCases([]);
+      } finally {
+        setLoadingCases(false);
+      }
+    };
+
+    fetchCases();
+  }, []);
+
+  // 刷新案件列表的函数
+  const refreshCases = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const response = await axios.get(`${API_URL}/cases`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const formattedCases = (response.data.cases || []).map((caseItem) => {
+        const addressParts = [];
+        if (caseItem.city?.name) addressParts.push(caseItem.city.name);
+        if (caseItem.township?.name) addressParts.push(caseItem.township.name);
+        if (caseItem.village) addressParts.push(caseItem.village);
+        if (caseItem.neighbor) addressParts.push(`${caseItem.neighbor}鄰`);
+        if (caseItem.street) addressParts.push(caseItem.street);
+        if (caseItem.section) addressParts.push(`${caseItem.section}段`);
+        if (caseItem.lane) addressParts.push(`${caseItem.lane}巷`);
+        if (caseItem.alley) addressParts.push(`${caseItem.alley}弄`);
+        if (caseItem.number) addressParts.push(`${caseItem.number}號`);
+        if (caseItem.floor) addressParts.push(caseItem.floor);
+
+        const fullAddress = addressParts.join("") || "-";
+
+        return {
+          id: caseItem._id,
+          report: "word",
+          status: caseItem.status || "-",
+          caseNumber: caseItem.caseNumber || "-",
+          address: fullAddress,
+          bidDeadline: "-",
+          responsiblePerson: caseItem.user?.name || "-",
+          finalJudgment: "-",
+          executionResult: "-",
+          preferredPurchaseResult: "-",
+          targetNumber: "-",
+          officialDocument: "-",
+        };
+      });
+
+      setCases(formattedCases);
+    } catch (error) {
+      console.error("刷新案件列表失敗:", error);
+    }
+  };
+
+  // 获取城市、乡镇列表
+  useEffect(() => {
+    if (showModal) {
+      const fetchData = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const headers = { Authorization: `Bearer ${token}` };
+
+          const [citiesRes, townshipsRes] = await Promise.all([
+            axios.get(`${API_URL}/cases/cities/list`, { headers }),
+            axios.get(`${API_URL}/cases/townships/list`, { headers }),
+          ]);
+
+          setCities(citiesRes.data.cities || []);
+          setTownships(townshipsRes.data.townships || []);
+        } catch (error) {
+          console.error("獲取數據失敗:", error);
+          toast.error("獲取數據失敗");
+        }
+      };
+
+      fetchData();
+    }
+  }, [showModal]);
+
+  // 当选择城市时，更新乡镇列表
+  useEffect(() => {
+    if (formData.cityId) {
+      const fetchTownships = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(
+            `${API_URL}/cases/townships/list?cityId=${formData.cityId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          setTownships(response.data.townships || []);
+        } catch (error) {
+          console.error("獲取鄉鎮列表失敗:", error);
+        }
+      };
+      fetchTownships();
+    } else {
+      // 如果没有选择城市，获取所有乡镇
+      const fetchAllTownships = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(`${API_URL}/cases/townships/list`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setTownships(response.data.townships || []);
+        } catch (error) {
+          console.error("獲取鄉鎮列表失敗:", error);
+        }
+      };
+      fetchAllTownships();
+    }
+  }, [formData.cityId]);
+
   const handleCreateCase = () => {
-    // 建立新案件的逻辑
-    console.log("建立新案件");
+    setShowModal(true);
+    // 设置默认负责人为当前用户
+    if (user) {
+      setFormData((prev) => ({ ...prev, userId: user.id || user._id || "" }));
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setFormData({
+      caseNumber: "",
+      company: "揚富開發有限公司",
+      cityId: "",
+      townshipId: "",
+      bigSection: "",
+      smallSection: "",
+      village: "",
+      neighbor: "",
+      street: "",
+      section: "",
+      lane: "",
+      alley: "",
+      number: "",
+      floor: "",
+      status: "在途",
+      userId: user?.id || user?._id || "",
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      // 确保使用当前登录用户的 ID
+      const submitData = {
+        ...formData,
+        userId: user?.id || user?._id || formData.userId,
+      };
+      
+      const response = await axios.post(
+        `${API_URL}/cases`,
+        submitData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      toast.success("案件創建成功！");
+      handleCloseModal();
+      // 刷新案件列表
+      refreshCases();
+    } catch (error) {
+      console.error("創建案件失敗:", error);
+      toast.error(
+        error.response?.data?.message || "創建案件失敗，請稍後再試"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   // 分页计算
@@ -159,8 +368,8 @@ function Dashboard() {
                   <option value="高雄市">高雄市</option>
                   <option value="台東縣">台東縣</option>
                 </select>
-              </div>
-            </div>
+                </div>
+                </div>
 
             {/* 负责人下拉菜单 */}
             <div className="flex-1 min-w-[150px]">
@@ -260,7 +469,20 @@ function Dashboard() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {currentCases.map((caseItem) => (
+                {loadingCases ? (
+                  <tr>
+                    <td colSpan="11" className="p-8 text-center text-gray-500">
+                      載入中...
+                    </td>
+                  </tr>
+                ) : currentCases.length === 0 ? (
+                  <tr>
+                    <td colSpan="11" className="p-8 text-center text-gray-500">
+                      沒有案件數據
+                    </td>
+                  </tr>
+                ) : (
+                  currentCases.map((caseItem) => (
                   <tr key={caseItem.id} className="hover:bg-gray-50">
                     <td className="p-1 text-center align-middle whitespace-nowrap">
                       <FaFileWord className="text-blue-600 text-xl" />
@@ -314,11 +536,12 @@ function Dashboard() {
                       </button>
                     </td>
                   </tr>
-                ))}
+                  ))
+                )}
               </tbody>
             </table>
           </div>
-        </div>
+              </div>
 
         {/* 分页控件 */}
         <div className="bg-white rounded-lg shadow-md p-4 mt-4">
@@ -364,7 +587,7 @@ function Dashboard() {
                   </button>
                 </>
               )}
-            </div>
+          </div>
 
             {/* 右侧：每页显示数量 */}
             <div className="flex items-center gap-2">
@@ -386,6 +609,273 @@ function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* 建立新案件 Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white">
+              <h2 className="text-2xl font-bold text-gray-900">建立新案件</h2>
+              <button
+                onClick={handleCloseModal}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <FaTimes className="text-xl" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleSubmit} className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* 案號 */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    案號 <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="caseNumber"
+                    value={formData.caseNumber}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* 公司 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    公司
+                  </label>
+                  <select
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="揚富開發有限公司">揚富開發有限公司</option>
+                    <option value="鉅鈦開發有限公司">鉅鈦開發有限公司</option>
+                  </select>
+                </div>
+
+                {/* 狀態 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    狀態
+                  </label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="在途">在途</option>
+                    <option value="結案">結案</option>
+                  </select>
+                </div>
+
+                {/* 城市 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    城市
+                  </label>
+                  <select
+                    name="cityId"
+                    value={formData.cityId}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">請選擇城市</option>
+                    {cities.map((city) => (
+                      <option key={city._id} value={city._id}>
+                        {city.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* 鄉鎮里區 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    鄉鎮里區
+                  </label>
+                  <select
+                    name="townshipId"
+                    value={formData.townshipId}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">請選擇鄉鎮里區</option>
+                    {townships.map((township) => (
+                      <option key={township._id} value={township._id}>
+                        {township.name}
+                        {township.city ? ` (${township.city.name})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+
+                {/* 地址相關字段 */}
+                <div className="md:col-span-2">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3 mt-4">
+                    地址資訊
+                  </h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    大段
+                  </label>
+                  <input
+                    type="text"
+                    name="bigSection"
+                    value={formData.bigSection}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    小段
+                  </label>
+                  <input
+                    type="text"
+                    name="smallSection"
+                    value={formData.smallSection}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    里
+                  </label>
+                  <input
+                    type="text"
+                    name="village"
+                    value={formData.village}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    鄰
+                  </label>
+                  <input
+                    type="text"
+                    name="neighbor"
+                    value={formData.neighbor}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    街道
+                  </label>
+                  <input
+                    type="text"
+                    name="street"
+                    value={formData.street}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    段
+                  </label>
+                  <input
+                    type="text"
+                    name="section"
+                    value={formData.section}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    巷
+                  </label>
+                  <input
+                    type="text"
+                    name="lane"
+                    value={formData.lane}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    弄
+                  </label>
+                  <input
+                    type="text"
+                    name="alley"
+                    value={formData.alley}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    號
+                  </label>
+                  <input
+                    type="text"
+                    name="number"
+                    value={formData.number}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    樓層
+                  </label>
+                  <input
+                    type="text"
+                    name="floor"
+                    value={formData.floor}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? "建立中..." : "建立案件"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

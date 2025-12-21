@@ -7,6 +7,7 @@ import {
   FaKey,
   FaExclamationTriangle,
   FaTachometerAlt,
+  FaExchangeAlt,
 } from "react-icons/fa";
 
 function Navbar() {
@@ -37,15 +38,27 @@ function Navbar() {
       <nav className="w-full bg-white/95 backdrop-blur-xl shadow-[0_20px_60px_-15px_rgba(99,102,241,0.35)] border-b border-white/40 p-0 m-0 sticky top-0 left-0 z-30">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
-              <FaTachometerAlt className="text-white text-2xl" />
-            </div>
-            <h1 className="text-2xl font-extrabold text-gray-900">
-              儀表板導航
-            </h1>
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="flex items-center gap-4 hover:opacity-80 transition-opacity cursor-pointer"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+                <FaTachometerAlt className="text-white text-2xl" />
+              </div>
+              <h1 className="text-2xl font-extrabold text-gray-900">
+                儀表板導航
+              </h1>
+            </button>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => navigate("/import-export")}
+              className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 text-white rounded-2xl hover:from-green-600 hover:via-emerald-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500/50 transform transition-all duration-300 hover:shadow-[0_10px_30px_-5px_rgba(34,197,94,0.4)] active:scale-95"
+            >
+              <FaExchangeAlt className="transition-transform duration-300 group-hover:rotate-180" />
+              <span className="font-semibold">匯入/匯出</span>
+            </button>
             <button
               onClick={() => navigate("/profile")}
               className="px-5 py-2.5 rounded-2xl border-2 border-indigo-200 text-indigo-600 font-semibold bg-indigo-50/80 hover:bg-indigo-100 transition-all duration-200"
